@@ -16,6 +16,15 @@ type Table struct {
 	River      *Card    // 公共牌：河牌，第五张也是最后一张公共牌
 }
 
+// NewTable 创建新的牌桌
+func NewTable(pot *Pot, seats *Seat) *Table {
+	return &Table{
+		Pot:    pot,
+		Seats:  seats,
+		MinBet: defaultMinBet,
+	}
+}
+
 // DealHands 为所有玩家发放手牌
 func (t *Table) DealHands(d *Deck) {
 	activePlayers := t.Seats.GetActivePlayers()

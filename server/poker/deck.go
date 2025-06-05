@@ -26,7 +26,7 @@ func (d *Deck) GetNextCard() (*Card, error) {
 }
 
 // NewDeck 创建一副新的扑克牌
-func NewDeck() Deck {
+func NewDeck() *Deck {
 	suits := []CardSuit{Clubs, Diamonds, Hearts, Spades}
 	ranks := []CardRank{Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace}
 	cards := make([]Card, DeckSize)
@@ -46,5 +46,5 @@ func NewDeck() Deck {
 	// 使用随机算法打乱牌堆
 	rand.Shuffle(len(cards), func(i, j int) { cards[i], cards[j] = cards[j], cards[i] })
 
-	return Deck{Cards: cards, CurrentCardIndex: 0}
+	return &Deck{Cards: cards, CurrentCardIndex: 0}
 }
