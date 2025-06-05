@@ -203,7 +203,21 @@ func (c *Client) processEvent(e Event) {
 
 }
 
+// handleJoin 处理加入游戏请求
 func (c *Client) handleJoin(username string) error {
+	// 设置用户名
+	c.username = username
+
+	// 发送加入成功事件
+	c.send <- createOnJoinEvent(c.id, username)
+
+	// 广播加入事件
+	newMessage := createNewMessageEvent(username, fmt.Sprintf("%s joined the game.", username))
+	c.hub.broadcast <- NewBroadcastEvent(newMessage)
+
+	// 更新并广播游戏状态
+	updateGame := createUpdateGameEvent(c, false)
+	c.hub.broadcast <- NewBroadcastEvent(updateGame)
 
 	return nil
 }
