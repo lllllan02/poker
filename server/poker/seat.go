@@ -35,17 +35,6 @@ func NewSeat(n int) *Seat {
 	return node.Value.(*Seat)
 }
 
-// GetPlayerById 根据玩家 id 查找玩家
-func (s *Seat) GetPlayerById(playerId string) *Player {
-	for i := 0; i < s.Len(); i++ {
-		if s.Player != nil && s.Player.Id == playerId {
-			return s.Player
-		}
-		s = s.Next()
-	}
-	return nil
-}
-
 // GetActivePlayers 获取活跃的玩家
 func (s *Seat) GetActivePlayers() []*Player {
 	activePlayers := make([]*Player, 0)

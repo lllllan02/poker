@@ -90,7 +90,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	client := &Client{
 		id:       fmt.Sprintf("client_%s", uuid.New().String()[:8]), // 客户端唯一标识
 		username: "",                                                // 用户名
-		seatId:   "",                                                // 座位号
+		playerId: "",                                                // 玩家唯一标识
 		muted:    false,                                             // 是否被禁言
 		conn:     conn,                                              // WebSocket 连接
 		game:     hub.game,                                          // 游戏

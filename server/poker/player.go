@@ -25,7 +25,7 @@ type Player struct {
 	Chips     int          // 玩家持有的筹码数
 	HasFolded bool         // 是否已弃牌
 	HoleCards [2]*Card     // 玩家的两张底牌
-	Id        string       // 玩家唯一标识
+	Id        string       // 玩家唯一标识(座位号)
 	Name      string       // 玩家名称
 	IsHuman   bool         // 是否是人类玩家
 	Status    PlayerStatus // 玩家当前状态

@@ -1,12 +1,14 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/lllllan02/pocker/poker"
+	"github.com/spf13/cast"
 )
 
 // WebSocket 连接的相关常量配置
@@ -35,7 +37,7 @@ var upgrader = websocket.Upgrader{
 type Client struct {
 	id       string          // 客户端唯一标识
 	username string          // 用户名
-	seatId   string          // 座位号
+	playerId string          // 玩家唯一标识
 	muted    bool            // 是否被禁言
 	conn     *websocket.Conn // WebSocket 连接
 	game     *poker.Game     // 游戏
@@ -116,8 +118,132 @@ func (c *Client) writePump() {
 	}
 }
 
-// processEvent 处理接收的事件
-func (c *Client) processEvent(event Event) {}
-
 // disconnectPlayer 断开玩家连接
 func (c *Client) disconnectPlayer() {}
+
+// processEvent 处理接收的事件
+func (c *Client) processEvent(e Event) {
+	var err error
+	defer func() {
+		// 如果处理事件时发生错误，则发送错误事件
+		if err != nil {
+			c.send <- createErrorEvent(err)
+		}
+	}()
+
+	switch e.Action {
+
+	// 加入游戏请求
+	case EventActionJoin:
+		username := cast.ToString(e.Params["username"])
+		err = c.handleJoin(username)
+
+	// 入座请求
+	case EventActionTakeSeat:
+		seatId := cast.ToString(e.Params["seat_id"])
+		err = c.handleTakeSeat(seatId)
+
+	// 静音请求
+	case EventActionMute:
+		muted := cast.ToBool(e.Params["muted"])
+		err = c.handleMute(muted)
+
+	// 发送消息
+	case EventActionSendMessage:
+		username := cast.ToString(e.Params["username"])
+		message := cast.ToString(e.Params["message"])
+		err = c.handleSendMessage(username, message)
+
+	// 发送信号
+	case EventActionSendSignal:
+		peerId := cast.ToString(e.Params["peer_id"])
+		stream := cast.ToString(e.Params["stream_id"])
+		signalData := e.Params["signal_data"]
+		err = c.handleSendSignal(peerId, stream, signalData)
+
+	// 处理游戏动作
+	default:
+		// 如果当前不是玩家回合，则返回错误
+		if !c.game.IsPlayerStage() {
+			err = fmt.Errorf("you cannot move during the %s stage", c.game.Stage)
+			return
+		}
+
+		// 如果当前不是玩家回合，则返回错误
+		if !c.game.IsPlayerTurn(c.playerId) {
+			err = fmt.Errorf("you cannot move out of turn")
+			return
+		}
+
+		// 处理游戏动作
+		switch e.Action {
+
+		// 弃牌
+		case EventActionFold:
+			err = c.handleFold()
+
+		// 过牌
+		case EventActionCheck:
+			err = c.handleCheck()
+
+		// 跟注
+		case EventActionCall:
+			err = c.handleCall()
+
+		// 加注
+		case EventActionRaise:
+			amount := cast.ToInt(e.Params["amount"])
+			err = c.handleRaise(amount)
+
+		default:
+			err = fmt.Errorf("invalid action: %s", e.Action)
+
+		}
+	}
+
+}
+
+func (c *Client) handleJoin(username string) error {
+
+	return nil
+}
+
+func (c *Client) handleTakeSeat(seatId string) error {
+
+	return nil
+}
+
+func (c *Client) handleMute(muted bool) error {
+
+	return nil
+}
+
+func (c *Client) handleSendMessage(username string, message string) error {
+
+	return nil
+}
+
+func (c *Client) handleSendSignal(peerId string, stream string, signalData any) error {
+
+	return nil
+}
+
+func (c *Client) handleFold() error {
+
+	return nil
+}
+
+func (c *Client) handleCheck() error {
+
+	return nil
+}
+
+func (c *Client) handleCall() error {
+
+	return nil
+}
+
+func (c *Client) handleRaise(amount int) error {
+
+	return nil
+}

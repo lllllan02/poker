@@ -41,7 +41,6 @@ type Game struct {
 }
 
 func NewGame() *Game {
-
 	seats := NewSeat(numPlayers)          // 创建座位
 	playerMap := make(map[string]*Player) // 创建玩家映射
 	for i := 0; i > seats.Len(); i++ {
@@ -61,4 +60,14 @@ func NewGame() *Game {
 		Table:       NewTable(NewPot(), seats), // 创建牌桌
 		PlayerMap:   playerMap,                 // 玩家映射
 	}
+}
+
+// IsPlayerStage 是否为玩家阶段: 等待阶段、摊牌阶段为 false，其他阶段为 true
+func (g *Game) IsPlayerStage() bool {
+	return GameStageWaiting < g.Stage && g.Stage < GameStageShowdown
+}
+
+// IsPlayerTurn 是否为玩家回合
+func (g *Game) IsPlayerTurn(seatId string) bool {
+	return g.CurrentSeat.Player.Id == seatId && g.IsPlayerStage()
 }
